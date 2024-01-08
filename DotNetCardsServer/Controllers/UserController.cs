@@ -1,6 +1,10 @@
-﻿using DotNetCardsServer.Models.Users;
+﻿using DotNetCardsServer.Models.MockData;
+using DotNetCardsServer.Models.Users;
+using DotNetCardsServer.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace DotNetCardsServer.Controllers
 {
@@ -10,55 +14,55 @@ namespace DotNetCardsServer.Controllers
     {
         // GET: UserController
 
+        
+
+
+
         [HttpGet]
-        public IActionResult Get(int? id)
+        public IActionResult Get(ObjectId? id)
         {
             if (id != null)
             {
-                return Ok(users.Where(u => u.Id == id).ToArray());
+                return Ok(MockUsers.UserList.FirstOrDefault(u => u.Id == id));
             }
-            else return Ok(users);
+            else return Ok(MockUsers.UserList);
+        }
+        [HttpPut("{id}")]
+        public IActionResult Put(ObjectId id, [FromBody] User updatedUser)
+        {
+            int index = MockUsers.UserList.FindIndex(user => user.Id == id);
+            if (index == -1)
+            {
+                return NotFound();
+            }
+
+            MockUsers.UserList[index] = ObjectHelper.DeepCopy(updatedUser);
+            return NoContent();
+        }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(ObjectId id)
+        {
+            User? u = MockUsers.UserList.FirstOrDefault(user => user.Id == id);
+            if (u == null)
+            {
+                return NotFound();
+            }
+
+            MockUsers.UserList.Remove(u);
+            return NoContent();
+        }
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginModel loginModel)
+        {
+            User? u = MockUsers.UserList.FirstOrDefault(user => user.Email == loginModel.Email && user.Password == loginModel.Password);
+
+            if (u == null)
+            {
+                return Unauthorized("Email or Password wrong");
+            }
+
+            return Ok("login token");
         }
 
-        static private User regularUser = new User(
-                id: 1,
-                userName: new Name("John", "Doe", "Middle"),
-                email: "john.doe@example.com",
-                password: "password123",
-                phone: "123-456-7890",
-                userImage: new Image("https://example.com/image1.jpg", "John's Image"),
-                userAddress: new Address("State1", "Country1", "City1", "Street1", 123, 45678),
-                isAdmin: false,
-                isBusiness: false);
-
-        static private User businessUser = new User(
-            id: 2,
-            userName: new Name("Jane", "Doe", "Middle"),
-            email: "jane.doe@example.com",
-            password: "password456",
-            phone: "234-567-8901",
-            userImage: new Image("https://example.com/image2.jpg", "Jane's Image"),
-            userAddress: new Address("State2", "Country2", "City2", "Street2", 456, 56789),
-            isAdmin: false,
-            isBusiness: true);
-
-        static private User adminBusinessUser = new User(
-            id: 3,
-            userName: new Name("James", "Smith", "Middle"),
-            email: "james.smith@example.com",
-            password: "password789",
-            phone: "345-678-9012",
-            userImage: new Image("https://example.com/image3.jpg", "James' Image"),
-            userAddress: new Address("State3", "Country3", "City3", "Street3", 789, 67890),
-            isAdmin: true,
-            isBusiness: true);
-
-        // Create a List of User objects and add the users to it
-        List<User> users = new List<User>
-        {
-                regularUser,
-                businessUser,
-                adminBusinessUser
-        };
     }
 }

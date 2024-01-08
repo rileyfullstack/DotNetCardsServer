@@ -1,3 +1,5 @@
+using DotNetCardsServer.Services.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +8,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton(serviceProvider =>
+{
+    var config = serviceProvider.GetService<IConfiguration>(); 
+    return MongoDbService.CreateMongoClient(config);
+});
 
 var app = builder.Build();
 
