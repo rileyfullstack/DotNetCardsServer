@@ -1,4 +1,5 @@
-﻿using DotNetCardsServer.Models.Users;
+﻿using DotNetCardsServer.Exceptions;
+using DotNetCardsServer.Models.Users;
 using MongoDB.Driver;
 
 namespace DotNetCardsServer.Services.Users
@@ -18,7 +19,7 @@ namespace DotNetCardsServer.Services.Users
             var existingUser = await _users.Find(u => u.Email == newUser.Email).FirstOrDefaultAsync();
             if (existingUser != null)
             {
-                throw new Exception("User with this email already exists.");
+                throw new UserAlreadyExistsException("User with this email already exists.");
             }
 
             await _users.InsertOneAsync(newUser);

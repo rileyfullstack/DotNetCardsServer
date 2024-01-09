@@ -7,7 +7,6 @@ namespace DotNetCardsServer.Models.MockData
         static public List<User> UserList = new List<User>
         {
             new User(
-                id: 1,
                 userName: new Name("John", "Doe", "Middle"),
                 email: "john.doe@example.com",
                 password: "password123",
@@ -18,7 +17,6 @@ namespace DotNetCardsServer.Models.MockData
                 isBusiness: false),
 
             new User(
-                id: 2,
                 userName: new Name("Jane", "Doe", "Middle"),
                 email: "jane.doe@example.com",
                 password: "password456",
@@ -29,7 +27,6 @@ namespace DotNetCardsServer.Models.MockData
                 isBusiness: true),
 
             new User(
-                id: 3,
                 userName: new Name("James", "Smith", "Middle"),
                 email: "james.smith@example.com",
                 password: "password789",
