@@ -1,4 +1,5 @@
-﻿using DotNetCardsServer.Models.MockData;
+﻿using DotNetCardsServer.Exceptions;
+using DotNetCardsServer.Models.MockData;
 using DotNetCardsServer.Models.Users;
 using DotNetCardsServer.Services.Users;
 using DotNetCardsServer.Utils;
@@ -24,61 +25,73 @@ namespace DotNetCardsServer.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok(MockUsers.UserList);
+            List<User> result = await _usersService.GetUsersAsync();
+            return Ok(result);
         }
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        public IActionResult Get(string id)
+        public async Task<IActionResult> Get(string id)
         {
-            User? u = MockUsers.UserList.FirstOrDefault(user => user.Id.ToString() == id);
-            if (u == null)
+            try
             {
-                return NotFound();
+                User u = await _usersService.GetUserAsync(id);
+                return Ok(u);
             }
-            return Ok(u);
+            catch (UserDoesntExistException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // POST api/<UsersController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] User newUser)
         {
-            await _usersService.CreateUserAsync(newUser);
+            try 
+            {
+                await _usersService.CreateUserAsync(newUser);
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return CreatedAtAction(nameof(Get), new { Id = newUser.Id }, newUser);
         }
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody] User updatedUser)
+        public async Task<IActionResult> Put(string id, [FromBody] User updatedUser)
         {
-            int index = MockUsers.UserList.FindIndex(user => user.Id.ToString() == id);
-            if (index == -1)
+            try
             {
-                return NotFound();
+                User newUser = await _usersService.EditUserAsync(id, updatedUser);
             }
-
-            MockUsers.UserList[index] = ObjectHelper.DeepCopy(updatedUser);
-
+            catch (UserDoesntExistException ex)
+            {
+                return NotFound(ex.Message);
+            }
             return NoContent();
         }
+
 
         // DELETE api/<UsersController>/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            User? u = MockUsers.UserList.FirstOrDefault(user => user.Id.ToString() == id);
-            if (u == null)
+            try
             {
-                return NotFound();
+                await _usersService.DeleteUserAsync(id);
             }
-
-            MockUsers.UserList.Remove(u);
-
+            catch (UserDoesntExistException ex)
+            {
+                return NotFound(ex.Message);
+            }
             return NoContent();
         }
+
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginModel loginModel)
