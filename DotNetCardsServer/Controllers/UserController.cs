@@ -94,12 +94,16 @@ namespace DotNetCardsServer.Controllers
 
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel loginModel)
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            User? u = MockUsers.UserList.FirstOrDefault(user => user.Email == loginModel.Email && user.Password == loginModel.Password);
-            if (u == null)
+            try
             {
+                User? u = await _usersService.LoginAsync(loginModel);
+            } catch(AuthenticationException ex)
+            {
+                Console.WriteLine(ex.Message);
                 return Unauthorized("Email or Password wrong");
+
             }
             return Ok("login token");
         }
