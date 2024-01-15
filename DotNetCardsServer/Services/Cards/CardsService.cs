@@ -16,7 +16,7 @@ namespace DotNetCardsServer.Services.Cards
             _cards = database.GetCollection<Card>("cards");
         }
 
-        public async Task<Card> CreateUserAsync(Card newCard)
+        public async Task<Card> CreateCardAsync(Card newCard)
         {
             var existingUser = await _cards.Find(c => (c.Title == newCard.Title) && (c.User_Id == newCard.User_Id)).FirstOrDefaultAsync();
             if (existingUser != null)
@@ -58,7 +58,7 @@ namespace DotNetCardsServer.Services.Cards
         }
 
         //edit user
-        public async Task<Card> EditUserAsync(string cardId, Card updatedCard)
+        public async Task<Card> EditCardAsync(string cardId, Card updatedCard)
         {
             var filter = Builders<Card>.Filter.Eq(u => u._id, new ObjectId(cardId));
 

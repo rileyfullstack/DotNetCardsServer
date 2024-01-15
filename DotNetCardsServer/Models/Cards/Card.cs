@@ -4,6 +4,7 @@ namespace DotNetCardsServer.Models.Cards
 {
     public class Card
     {
+    #pragma warning disable CS8618
         public ObjectId _id { get; set; }
         public string Title { get; set; }
         public string Subtitle { get; set; }
