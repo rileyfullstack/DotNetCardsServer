@@ -2,6 +2,7 @@
 using DotNetCardsServer.Models.Cards;
 using DotNetCardsServer.Services.Cards;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -52,6 +53,10 @@ namespace DotNetCardsServer.Controllers
         [HttpPost("{id}")]
         public async Task<IActionResult> Post([FromBody] Card newCard)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
                 await _cardsService.CreateCardAsync(newCard);
@@ -68,6 +73,10 @@ namespace DotNetCardsServer.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody] Card updatedCard)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
                 Card newCard = await _cardsService.EditCardAsync(id, updatedCard);

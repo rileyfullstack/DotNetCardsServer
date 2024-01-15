@@ -50,6 +50,10 @@ namespace DotNetCardsServer.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] User newUser)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try 
             {
                 await _usersService.CreateUserAsync(newUser);
@@ -65,6 +69,10 @@ namespace DotNetCardsServer.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody] User updatedUser)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
                 User newUser = await _usersService.EditUserAsync(id, updatedUser);
