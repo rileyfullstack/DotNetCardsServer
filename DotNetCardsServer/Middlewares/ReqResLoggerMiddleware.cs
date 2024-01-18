@@ -22,10 +22,19 @@ namespace DotNetCardsServer.Middlewares
 
             DateTime endTime = DateTime.Now;
             TimeSpan duration = endTime - dateTime;
-            string statusCode = context.Response.StatusCode.ToString();
+            int statusCode = context.Response.StatusCode;
             string responseTime = duration.TotalMilliseconds.ToString();
 
-            logger.LogInformation($"[{dateTime}] - {origin} - {path} - {method} - {statusCode} - {responseTime}");
+            if(statusCode >= 400)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+            Console.WriteLine($"[{dateTime}] - {origin} - {path} - {method} - {statusCode} - {responseTime}");
+            Console.ResetColor();
         }
     }
 

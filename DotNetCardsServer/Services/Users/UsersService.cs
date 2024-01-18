@@ -1,5 +1,6 @@
 ﻿using DotNetCardsServer.Exceptions;
 using DotNetCardsServer.Models.Users;
+using DotNetCardsServer.Utils;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -23,6 +24,7 @@ namespace DotNetCardsServer.Services.Users
                 throw new UserAlreadyExistsException("User with this email already exists.");
             }
 
+            newUser.Password = PasswordHelper.GeneratePassword(newUser.Password);
             await _users.InsertOneAsync(newUser);
             return new { newUser.Id, newUser.UserName, newUser.Email};
         }
@@ -91,11 +93,16 @@ namespace DotNetCardsServer.Services.Users
             var builder = Builders<User>.Projection;
             var projection = builder.Exclude("Password");
 
-            var userLogin = await _users.Find(u => u.Email == loginModel.Email && u.Password == loginModel.Password).Project<User>(projection).FirstOrDefaultAsync();
+            var userLogin = await _users.Find(u => u.Email == loginModel.Email).Project<User>(projection).FirstOrDefaultAsync();
             if (userLogin == null)
             {
-                throw new AuthenticationException("Login failed (User with the name and password recived does not exist).");
+                throw new AuthenticationException("Login failed (User with recived email does not exist)");
             }
+            if (PasswordHelper.VerifyPassword(userLogin.Password, loginModel.Password))
+            {
+                throw new AuthenticationException("Login failed (Entered password is wrong.)");
+            }
+
             return userLogin;
         }
 

@@ -56,13 +56,13 @@ namespace DotNetCardsServer.Controllers
             }
             try 
             {
-                await _usersService.CreateUserAsync(newUser);
-            } catch (Exception ex)
+                object DTOuser = await _usersService.CreateUserAsync(newUser);
+                return CreatedAtAction(nameof(Get), new { Id = newUser.Id }, newUser);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-            return CreatedAtAction(nameof(Get), new { Id = newUser.Id }, newUser);
         }
 
         // PUT api/<UsersController>/5

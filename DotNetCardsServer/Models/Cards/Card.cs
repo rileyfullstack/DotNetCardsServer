@@ -16,7 +16,7 @@ namespace DotNetCardsServer.Models.Cards
         public Image Image { get; set; }
         public Address Address { get; set; }
         public string BizNumber { get; set; }
-        public int Likes { get; set; }
+        public int[] Likes { get; set; }
         public string User_Id { get; set; }
     }
 }
