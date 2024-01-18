@@ -3,6 +3,7 @@ using DotNetCardsServer.Models.Cards;
 using DotNetCardsServer.Services.Cards;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using MongoDB.Driver;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,6 +14,11 @@ namespace DotNetCardsServer.Controllers
     public class CardController : ControllerBase
     {
         private CardsService _cardsService;
+
+        public CardController(IMongoClient mongoClient)
+        {
+            _cardsService = new CardsService(mongoClient);
+        }
 
         //Get all cards
         [HttpGet]
@@ -41,7 +47,7 @@ namespace DotNetCardsServer.Controllers
         {
             try
             {
-                var cards = _cardsService.GetUserCardsAsync(userId);
+                var cards = await _cardsService.GetUserCardsAsync(userId);
                 return Ok(cards);
             } catch(NoCardsFoundException ex)
             {

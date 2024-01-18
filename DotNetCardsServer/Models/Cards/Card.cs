@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using DotNetCardsServer.Models.Users;
+using MongoDB.Bson;
 
 namespace DotNetCardsServer.Models.Cards
 {
