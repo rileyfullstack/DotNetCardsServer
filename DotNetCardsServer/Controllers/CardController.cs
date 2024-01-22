@@ -30,11 +30,11 @@ namespace DotNetCardsServer.Controllers
 
         // GET specific card
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(string cardId)
+        public async Task<IActionResult> Get(string id)
         {
             try
             {
-                Card requestedCard = await _cardsService.GetCardAsync(cardId);
+                Card requestedCard = await _cardsService.GetCardAsync(id);
                 return Ok(requestedCard);
             } catch (CardDoesntExistException ex)
             {
@@ -43,11 +43,11 @@ namespace DotNetCardsServer.Controllers
         }
 
         [HttpGet("User/{id}")]
-        public async Task<IActionResult> GetUserCards(string userId)
+        public async Task<IActionResult> GetUserCards(string id)
         {
             try
             {
-                var cards = await _cardsService.GetUserCardsAsync(userId);
+                var cards = await _cardsService.GetUserCardsAsync(id);
                 return Ok(cards);
             } catch(NoCardsFoundException ex)
             {
@@ -56,7 +56,7 @@ namespace DotNetCardsServer.Controllers
         }
 
         // POST api/<CardController>
-        [HttpPost("{id}")]
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] Card newCard)
         {
             if (!ModelState.IsValid)
@@ -108,5 +108,6 @@ namespace DotNetCardsServer.Controllers
             }
             return NoContent();
         }
+
     }
 }

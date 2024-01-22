@@ -95,5 +95,19 @@ namespace DotNetCardsServer.Services.Cards
             }
             return userCards;
         }
+        public async Task LikeCardAsync(string cardId, string userId)
+        {
+            var card = await GetCardAsync(cardId);
+            var update = card.Likes.Contains(userId)
+                ? Builders<Card>.Update.Pull(c => c.Likes, userId)
+                : Builders<Card>.Update.Push(c => c.Likes, userId);
+
+            var result = await _cards.UpdateOneAsync(c => c._id == card._id, update);
+            if (result.MatchedCount == 0)
+            {
+                throw new Exception("Card not found");
+            }
+        }
+
     }
 }
